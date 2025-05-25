@@ -31,10 +31,9 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
-// If your frontend is using a different field name, update it here
 const uploadQR = multer({
   storage,
-  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB max size
+  limits: { fileSize: 10 * 1024 * 1024 }, // 2MB max size
   fileFilter
 });
 
