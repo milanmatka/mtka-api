@@ -5,10 +5,14 @@ const QRCode = require('../../modal/Adminmodal/QRModel');
 
 exports.uploadHomeDp = async (req, res) => {
   try {
-    const files = req.files;
-    if (!files || files.length === 0) {
+    // Handle files from any()
+    const files = req.files || [];
+    
+    if (files.length === 0) {
       return res.status(400).json({ message: 'No files uploaded' });
     }
+
+    console.log('Processing files:', files.map(f => f.filename));
 
     const savedFiles = await Promise.all(
       files.map(file => {
@@ -19,8 +23,8 @@ exports.uploadHomeDp = async (req, res) => {
 
     res.status(200).json({ message: 'Images uploaded successfully', data: savedFiles });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error uploading images', error });
+    console.error('Error in uploadHomeDp:', error);
+    res.status(500).json({ message: 'Error uploading images', error: error.message });
   }
 };
 
@@ -65,9 +69,17 @@ exports.deleteHomeDp = async (req, res) => {
 //mujhe qr code ki photo upload karni hai
 exports.uploadQrCode = async (req, res) => {
   try {
-    // Support both single and multiple file uploads
-    const files = req.files && Array.isArray(req.files) ? req.files : (req.file ? [req.file] : []);
-    if (!files || files.length === 0) {
+    // Handle both fields() and single() structures
+    let files = [];
+    if (req.files) {
+      // If using fields()
+      files = req.files.qrcode || req.files.image || req.files.file || [];
+    } else if (req.file) {
+      // If using single()
+      files = [req.file];
+    }
+
+    if (files.length === 0) {
       return res.status(400).json({ message: 'No files uploaded' });
     }
 
